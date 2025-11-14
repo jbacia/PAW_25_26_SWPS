@@ -13,6 +13,10 @@ BOOK_FORMATS = (
     ('A', 'Audiobook'),
 )
 
+PLCIE = models.IntegerChoices(
+    'Plcie',
+    'Mezczyzna Kobieta Inna'
+)
 
 class Genre(models.Model):
     """Model reprezentujący gatunek literacki."""
@@ -54,3 +58,31 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+class Osoba(models.Model):
+    PLEC_WYBOR = (
+        ("K", "Kobieta"),
+        ("M", "Mezczyzna"),
+        ("I", "Inna")
+    )
+    imie = models.CharField(max_length = 50, blank = False, null = False ) #pole tekstowe, wymagane, niepuste
+    nazwisko = models.CharField(max_length = 100, blank = False, null = False) #pole tekstowe, wymagane, niepuste
+    plec = models.IntegerField( choices= PLCIE.choices, default= PLCIE.Inna ) #pole wyboru (kobieta, mężczyzna, inne)
+    stanowisko = models.ForeignKey('Stanowisko', on_delete= models.CASCADE) #klucz obcy do modelu Stanowisko, przekazujemy mu ta nazwe jako str czyli z '' bo musi byc po nim ta klasa stanowisko z jakiegos powodu a jak jest po nim to jest dla niego niezdefiniowane; models.CASCADE to znaczy ze jak usuniemy stanowisko to osoby tez znikaja
+    data_dodania = models.DateField(auto_now_add=True, editable=False)
+
+    def __str__(self):
+        return f"Osoba: {self.imie} {self.nazwisko}"
+    
+
+    class Meta: 
+        ordering = ["nazwisko"] #to nam posortuje 
+
+
+
+class Stanowisko(models.Model):
+    nazwa = models.CharField(max_length=70, null = False, blank = False) # pole tekstowe, wymagane, niepuste
+    opis = models.TextField(null = True, blank = True) #pole tekstowe, opcjonalne
+
